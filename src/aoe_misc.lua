@@ -276,6 +276,46 @@ navMenu = {
 
 
 
+local function getRequirements(odf)
+  local req = {}
+  local i = 1
+  local r = nil
+  repeat
+    r = GetODFString(odf, "AoE_TechTree", ("requires%d"):format(i))
+    table.insert(req,r)
+    i = i + 1
+  until r==nil
+  return req
+end
+
+local function checkIfCanBuild(handle, item, page)
+  page = page or "default"
+  local cls = GetClassLabel(handle)
+  if cls == "constructionrig" then
+    item = item - 2
+  end
+  local team = GetTeamNum(handle)
+  if not IsBusy(handle) and CanBuild(handle) and item > 0 then
+    local odf = OpenODF(GetOdf(handle))
+    blist = getBuildTree(odf)[page]
+    local unitOdf = blist[item]
+    if unitOdf~=nil then
+      local o = OpenODF(unitOdf)
+      local sc = GetODFInt(o,"GameObjectClass","scrapCost")
+      if GetScrap(team) >= sc then
+        for i, v in pairs(getRequirements(o)) do
+          local tmp = OpenODF(v)
+          if not hasAnyOfOdf(v) then
+            local n1 = GetODFString(o, "GameObjectClass", "unitName")
+            local n2 = GetODFString(tmp, "GameObjectClass", "unitName")
+            return false, n1, n2 
+          end
+        end
+      end
+    end
+  end
+  return true
+end
 
 
 
@@ -292,5 +332,7 @@ return {
   getBuildTree = getBuildTree,
   getRecursiveBuildTree = getRecursiveBuildTree,
   getUpgradeTable = getUpgradeTable,
-  canBeUpgraded = canBeUpgraded
+  canBeUpgraded = canBeUpgraded,
+  checkIfCanBuild = checkIfCanBuild,
+  getRequirements = getRequirements
 }
