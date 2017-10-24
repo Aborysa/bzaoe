@@ -46,13 +46,14 @@ local delayedUpgradeTable = {}
 
 local function recalcPilotHold()
   if localPlayer == nil then return end
-  local pilots = GetMaxPilot()
+  local pilots = GetMaxPilot(localPlayer.team)
   for i, v in pairs(units) do
-    if IsAlive(i) then
-      pilots = pilots - GetODFInt("GameObjectClass", "pilotCost")
+    local pilot = GetPilotClass(i)
+    if pilot and GetPlayerHandle() ~= i and IsAliveAndPilot(i) then
+      pilots = pilots - GetODFInt(OpenODF(pilot),"GameObjectClass", "pilotCost")
     end
   end
-  SetPilot(localPlayer.team)
+  SetPilot(localPlayer.team, pilots)
 end
 
 
