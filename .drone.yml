@@ -8,11 +8,8 @@ pipeline:
     pull: true
     when:
       event:
-        - push
         - tag
-      branch:
-        - master
-        
+
     commands:
       - mkdir /tmp/files
       - mkdir /tmp/lua
