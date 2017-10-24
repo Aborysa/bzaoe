@@ -1,0 +1,47 @@
+workspace:
+  base: /bzaoe
+  path: src/${DRONE_REPO_SLUG}
+
+pipeline:
+  pre-process:
+    image: docker.faavne.no/bzone/bztools:latest
+    pull: true
+    when:
+      event:
+        - push
+        - tag
+      branch:
+        - master
+        
+    commands:
+      - mkdir /tmp/files
+      - mkdir /tmp/lua
+      - mkdir /tmp/bzmoon
+      - cd /tmp/lua
+      - curl -O https://raw.githubusercontent.com/bjornbytes/RxLua/master/rx.lua
+      - cd /tmp/bzmoon
+      - curl -O https://media.faavne.no/bzmoon/bzmoon_latest.zip
+      - unzip bzmoon_latest.zip
+      - mv ./bzutils.lua /tmp/lua
+      - find /bzaoe -type f \( -name "*.lua" -o -name "*.squish" \) -exec cp {} /tmp/lua \;
+      - python3 /bztools/luaSquish.py /tmp/lua -r
+      - find /bzaoe -not -ipath '*/\.*' -not -name '*.lua' -not -name '*.bin' -type f -exec cp {} /tmp/files \;
+      - find /tmp/lua -name '*.lua' -type f -exec mv {} /tmp/files \;
+      - python3 /bztools/crlf_fixer.py /tmp/files
+      - mkdir -p /bzaoe/output
+      - zip -j -r /bzaoe/output/bundle.zip /tmp/files
+      - find -type f -name '*.bzn' -exec python3 /bztools/bznDown.py {} {} \;
+      - zip -j -r /bzaoe/output/bundle1.5.zip /tmp/files
+
+
+  release:
+    group: deploy
+    image: docker.faavne.no/bzone/bztools:latest
+    when:
+      event:
+        - tag
+    commands:
+      - \cp -f /bzaoe/output/bundle.zip /drone/deploy/bzaoe_${DRONE_TAG}.zip || true
+      - \cp -f /bzaoe/output/bundle1.5.zip /drone/deploy/bzaoe1.5c_${DRONE_TAG}.zip || true
+    volumes:
+      - /root/studynator/nginx-fs/public/bzaoe:/drone/deploy
