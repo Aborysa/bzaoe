@@ -1,0 +1,14 @@
+[GameObjectClass]
+baseName = "sblpad"
+classLabel = "i76building"
+scrapCost = 100
+scrapValue = 35
+maxHealth = 9000
+maxAmmo = 0
+unitName = "Wonder"
+heatSignature = 0.8
+imageSignature = 8.0
+radarSignature = 1.0
+
+[BuildingClass]
+soundAmbient = "sblpade0.wav"

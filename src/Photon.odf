@@ -1,0 +1,21 @@
+[OrdnanceClass]
+classLabel = "bolt"
+shotGeometry = NULL
+xplGround = "xmslgnd"
+xplVehicle = "xmslcar"
+xplBuilding = "xmslbld"
+
+ammoCost = 1
+lifeSpan = 300e-6
+shotSpeed = 1e6
+damageBallistic = 15
+damageConcussion = 0
+damageFlame = 0
+damageImpact = 0
+
+[BoltClass]
+segmentRadius = 0.2
+segmentLength = 5.0
+segmentVariance = 0.0
+segmentTexture = "beam_r.0"
+

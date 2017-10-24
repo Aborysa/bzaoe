@@ -1,0 +1,21 @@
+[GameObjectClass]
+baseName = "sbspow"
+classLabel = "powerplant"
+scrapCost = 8
+scrapValue = 3
+maxHealth = 2500
+maxAmmo = 0
+collisionRadius = 4.0
+unitName = "S-Power"
+heatSignature = 0.8
+imageSignature = 8.0
+radarSignature = 1.0
+
+[BuildingClass]
+soundAmbient = NULL
+
+[PowerPlantClass]
+powerRange = 200.0
+
+[AoE_TechTree]
+requires1="3bmbld"

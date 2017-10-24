@@ -1,0 +1,13 @@
+[GameObjectClass]
+baseName = "hvsav"
+classLabel = "wingman"
+scrapCost = 30
+scrapValue = 0
+maxHealth = 10
+buildTime = 60
+maxAmmo = 0
+unitName = "Tool Age"
+
+[AoE_TechTree]
+requires1="1vmuf"
+requires2="1bbarr"

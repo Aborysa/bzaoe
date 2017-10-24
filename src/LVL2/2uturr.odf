@@ -1,0 +1,14 @@
+[GameObjectClass]
+baseName = "bvturr"
+classLabel = "wingman"
+scrapValue = 0
+scrapCost = 0
+buildTime = 0
+maxHealth = 0
+maxAmmo = 0
+unitName = "Upgradable Turret"
+
+weaponHard1 = "GC1"
+weaponName1 = 
+weaponHard2 = "GC2"
+weaponName2 = 

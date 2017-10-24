@@ -1,0 +1,22 @@
+AoE BZ mod
+
+IMPORTANT
+
+ * Upgrade all units on the field
+
+ * Empty tanks to add custom weapons to players units for upgrades
+	- /enable autoupgrade .... to keep the changes if the player doesnt want the weapons to change upon upgrades
+	- new units appear when unlocked through the Tech-Tree
+
+ * NSDF -> Black Dogs -> CCA -> CRA -> Hadeans???
+
+ * AoE Traditional Pop counting/limiting
+
+ * Buildings + units have the same health as the game progresses
+
+
+SIDE STUFF
+
+ * Player uses Satilite instead of First Person
+
+https://docs.google.com/spreadsheets/d/11RpRRgd9qbV6JAnHhVM7cNKGjPwOZuc9S8H5aQMDHts/edit#gid=0

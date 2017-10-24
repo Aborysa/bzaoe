@@ -1,0 +1,16 @@
+[GameObjectClass]
+baseName = "svhraz"
+classLabel = "wingman"
+scrapValue = 0
+scrapCost = 0
+buildTime = 0
+maxHealth = 0
+maxAmmo = 0
+unitName = "Upgradable Bomber"
+
+weaponHard1 = "GC1"
+weaponName1 = 
+weaponHard2 = "GR1"
+weaponName2 = 
+weaponHard3 = "GR2"
+weaponName3 = 

@@ -1,0 +1,15 @@
+[GameObjectClass]
+baseName = "svapc"
+classLabel = "apc"
+collisionRadius = 7.0
+scrapValue = 4
+scrapCost = 5
+buildTime = 10.0
+maxHealth = 5000
+maxAmmo = 0
+unitName = "Upgradable Troopers"
+
+[APCClass]
+soldierType = "sssold"
+soldierCount = 5
+timeDeploy = 2.0

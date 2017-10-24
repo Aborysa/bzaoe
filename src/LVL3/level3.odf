@@ -1,0 +1,13 @@
+[GameObjectClass]
+baseName = "hvsav"
+classLabel = "wingman"
+scrapCost = 75
+scrapValue = 0
+maxHealth = 10
+buildTime = 60
+maxAmmo = 0
+unitName = "Iron Age"
+
+[AoE_TechTree]
+requires1="3bhqcp"
+requires2="3bhang"

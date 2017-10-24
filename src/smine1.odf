@@ -1,0 +1,8 @@
+[GameObjectClass]
+classLabel = "scrapfield"
+baseName = "pspwn_1"
+scrapCost = 0
+scrapValue = 35
+maxHealth = 0
+maxAmmo = 0
+unitName = "Scrap Field"

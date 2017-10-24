@@ -1,0 +1,14 @@
+[GameObjectClass]
+baseName = "sbcafe"
+classLabel = "i76building"
+scrapCost = 15
+scrapValue = 6
+maxHealth = 10000
+maxAmmo = 0
+unitName = "Cafeteria"
+heatSignature = 0.8
+imageSignature = 8.0
+radarSignature = 1.0
+
+[BuildingClass]
+soundAmbient = "sbcafee0.wav"

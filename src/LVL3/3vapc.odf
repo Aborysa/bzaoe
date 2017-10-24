@@ -1,0 +1,71 @@
+[GameObjectClass]
+baseName = "svapc"
+classLabel = "apc"
+collisionRadius = 7.0
+scrapValue = 4
+scrapCost = 8
+buildTime = 10.0
+maxHealth = 5000
+maxAmmo = 0
+unitName = "Transport Ship"
+aiName = "APCFriend"
+aiName2 = "APCEnemy"
+nation = "soviet"
+heatSignature = 0.2
+imageSignature = 3.5
+radarSignature = 0.1
+
+[CraftClass]
+rangeScan = 200.0
+periodScan = 0.0
+velocJam = 0.0
+
+selectWaitMsg = "svapcva.wav"
+selectDropoffMsg = "svapcvf.wav"
+selectPickupMsg = "svapcvg.wav"
+selectFollowMsg = "svapcvh.wav"
+selectOtherMsg = "svapcvj.wav"
+
+goMsg = "svapcv0.wav"
+attackMsg = "svapcv9.wav"
+followMsg = "svapcvh.wav"
+followMeMsg = "svapcv0.wav"
+repairMsg = "svapcv4.wav"
+recycleMsg = "svapcv6.wav"
+rescueMsg = "svapcv5.wav"
+otherMsg = "svapcvh.wav"
+
+deployedMsg = "svapcv2.wav"
+diedMsg = "Sbetty3.wav"
+
+[HoverCraftClass]
+setAltitude = 1.5
+accelDragStop = 4.0
+accelDragFull = 1.0
+alphaTrack = 10.0
+alphaDamp = 3.0
+pitchPitch = 0.1
+pitchThrust = 0.05
+rollStrafe = 0.1
+rollSteer = 0.1
+
+velocForward = 12.0
+velocReverse = 12.0
+velocStrafe = 12.0
+accelThrust = 50.0
+accelBrake = 50.0
+omegaSpin = 2.0
+omegaTurn = 1.0
+alphaSteer = 5.0
+accelJump = 0.0
+
+soundThrust = "svapce0.wav"
+soundTurbo = "svapce3.wav"
+
+[APCClass]
+soldierType = "3ssold"
+soldierCount = 5
+timeDeploy = 2.0
+
+[AoE_TechTree]
+requires1="3bcafe"
