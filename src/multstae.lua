@@ -1,1 +1,1 @@
-require("aoe")
+local _ = require("aoe")
