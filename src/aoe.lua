@@ -116,7 +116,10 @@ end
 
 
 local function canBeUpgraded(handle)
-  return (not IsBusy(handle)) and (playerScavs[handle]==nil or playerScavs[handle].scrap <= 0 and playerScavs[handle].grace <= 0)
+  return 
+    (not IsBusy(handle)) and 
+    (playerScavs[handle]==nil or playerScavs[handle].scrap <= 0 and playerScavs[handle].grace <= 0) and
+    (GetClassLabel(handle)~="apc" or GetCurrentCommand(handle) ~= AiCommand["GET_RELOAD"])
 end
 
 
