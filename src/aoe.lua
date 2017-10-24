@@ -3,16 +3,20 @@
 print("AoE!")
 -- should move all these function to another file
 
-local utils = require("misc")
+local misc = require("aoe_misc")
 
 
 
-local copyData = utils.copyData
-local spawnByData = utils.spawnByData
-local copyObject = utils.copyObject
-local navMenu = utils.navMenu
-local replaceByData = utils.replaceByData
-local replaceHandles = utils.replaceHandles
+local copyData = misc.copyData
+local spawnByData = misc.spawnByData
+local copyObject = misc.copyObject
+local navMenu = misc.navMenu
+local replaceByData = misc.replaceByData
+local replaceHandles = misc.replaceHandles
+local getBuildTree = misc.getBuildTree
+local getRecursiveBuildTree = misc.getRecursiveBuildTree
+local getUpgradeTable = misc.getUpgradeTable
+local canBeUpgraded = misc.canBeUpgraded
 -- the players units
 local units = {}
 local unitsByOdf = {}
@@ -22,16 +26,18 @@ local terminateNext = {}
 local armoryPage = "default"
 
 
+local waitForPlayers = {}
 local remotePlayers = {}
 local localPlayer = nil
 local playerCount = 0
 local lastPlayer = nil
 local checkLater = {}
-local relicOdf = ""
 local removeOnNext = {}
 local upgradeOnNext = {}
-
+local ready = false
+local readyTime = -1
 local currentNavMenu = nil
+
 
 -- We have to keep track of how much scrap the scavs have
 -- in order to be able to guess when they're empty
@@ -57,70 +63,12 @@ local function recalcPilotHold()
 end
 
 
-local function getBuildTree(odf)
-  -- looks at the odf file of the handle to get a list of odfs
-  local list = {default={}}
-  local isEmpty = true
-  --local odf = OpenODF(GetOdf(handle))
-  for i=1, 20 do
-    list.default[i] = GetODFString(odf, "ProducerClass", ("buildItem%d"):format(i))
-    isEmpty = isEmpty and list.default[i]==nil
-  end
-  if GetODFString(odf, "GameObjectClass", "classLabel") == "armory" then
-    local extraLists = {"cannon", "rocket", "mortar", "special"}
-    for _, l in ipairs(extraLists) do
-      list[l] = {}
-      for i=1, 20 do
-        list[l][i] = GetODFString(odf, "ArmoryClass", ("%sItem%d"):format(l,i))
-        isEmpty = isEmpty and list[l][i]==nil
-      end
-    end
-  end
-  return list, isEmpty
-end
 
 
--- get build tree of all producers 
-local function getRecursiveBuildTree(odf)
-  local ret = {}
-  local bTree, empty = getBuildTree(odf)
-  if not empty then
-    for i, v in pairs(bTree.default) do
-      local sub, e = getRecursiveBuildTree(OpenODF(v))
-      ret[i] = {
-        odf = v,
-        list = not e and sub
-      }
-    end
-  end
-  return ret, empty
-end
 
 
--- maps odf1 to odf2
-local function getUpgradeTable(t1, t2)
-  --local tree1 = getRecursiveBuildTree(odf1)
-  --local tree2 = getRecursiveBuildTree(odf2)
-  local buildTable = {}
-  for i, item in pairs(t1) do
-    if item.list then
-      local subTable = getUpgradeTable(item.list, t2[i].list)
-      for o1, o2 in pairs(subTable) do
-        buildTable[o1] = o2
-      end
-    end
-    buildTable[item.odf] = t2[i].odf
-  end
-  return buildTable
-end
 
 
-local function canBeUpgraded(handle)
-  return 
-    (not IsBusy(handle)) and 
-    (playerScavs[handle]==nil or playerScavs[handle].scrap <= 0 and playerScavs[handle].grace <= 0) and
-    (GetClassLabel(handle)~="apc" or GetCurrentCommand(handle) ~= AiCommand["GET_RELOAD"])
-end
 
 
 local function PerformUpgrade()
@@ -250,12 +198,18 @@ function Start()
   if playerCount <= 1 then
     localPlayer = lastPlayer or {id=0,team=GetTeamNum(GetPlayerHandle()),name="Player"}
     onNetworkReady()  
+  else
+    DisplayMessage("Please wait for network systems...")
   end
 end
 
 -- Is called when we have our own local id
 function onNetworkReady()
   print("Network ready", localPlayer.name, localPlayer.id)
+  if IsNetGame() then
+    DisplayMessage("Network is set up!")
+    DisplayMessage(("You're %s %d"):format(localPlayer.name, localPlayer.id))
+  end
   AddMaxScrap(localPlayer.team,1000)
   AddMaxPilot(localPlayer.team,1000)
 
@@ -279,11 +233,18 @@ end
 
 function Update(dtime)
   -- wait for network to be ready
-  if localPlayer == nil then 
+  if not ready then 
     SetVelocity(GetPlayerHandle(), 0)
     SetOmega(GetPlayerHandle(), SetVector(0,0,0))
     SetVelocity(GetRecyclerHandle(), 0)
     SetOmega(GetRecyclerHandle(), SetVector(0,0,0))
+    if readyTime > 0 then
+      readyTime = readyTime - dtime
+      if readyTime <= 0 then
+        ready = true
+        onNetworkReady()
+      end
+    end
     return
   end
   if currentNavMenu ~= nil then currentNavMenu:update() end
@@ -493,12 +454,14 @@ end
 
 -- networking stuff
 function CreatePlayer(id, name, team)
+  print("CreatePlayer", id, name, team)
   lastPlayer = {id = id, name = name, team = team}
   playerCount = playerCount + 1
 end
 
 function AddPlayer(id, name, team)
   remotePlayers[id] = {id=id,name=name,team=team}
+  waitForPlayers[id] = true
   print("AddPlayer", id, name, team)
   Send(id, "P", id, name, team)
 end
@@ -506,6 +469,7 @@ end
 
 function DeletePlayer(id, name, team)
   remotePlayers[id] = nil
+  waitForPlayers[id] = nil
   playerCount = playerCount - 1
 end
 
@@ -514,12 +478,24 @@ end
 
 function Receive(from, t, ...)
   print("Receive", from, t, ...)
-  utils.receive(from, t, ...)
+  misc.receive(from, t, ...)
   if t == "P" then
+    waitForPlayers[from] = nil
     if localPlayer == nil then
       id, name, team = ...
+      readyTime = 15
       localPlayer = {id=id,name=name,team=team}
-      onNetworkReady()
+    end
+    if not ready then
+      local left = 0
+      for i, v in pairs(waitForPlayers) do
+        left = left + 1
+      end
+      DisplayMessage(("Connected to %d/%d"):format(playerCount-left-1, playerCount - 1))
+      if left <= 0 then
+        ready = true
+        onNetworkReady()
+      end
     end
   elseif t == "U" then
     local era = ...

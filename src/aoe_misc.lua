@@ -1,11 +1,7 @@
 local rx = require("rx")
 
 
-local _unpack = unpack
-local _GetOdf = GetOdf
-local _GetPilotClass = GetPilotClass
-local _GetWeaponClass = GetWeaponClass
-local _BuildObject = BuildObject
+
 local _OpenODF = OpenODF
 local _RemoveObject = RemoveObject
 
@@ -23,53 +19,6 @@ local function receive(from, t, ...)
   end
 end
 
-local _openOdfs = setmetatable({},{__mode="v"})
--- Rewrite to cache odf files, they will be auto discarded as they're no logner referenced
-OpenODF = function(odf)
-  if _openOdfs[odf] == nil then
-    _openOdfs[odf] = _OpenODF(odf)
-  end
-  return _openOdfs[odf]
-end
-
-
-
-if IsNetGame() then
-  BuildObject = function(...)
-    local h = _BuildObject(...)
-    SetLocal(h)
-    return h
-  end
-end
-BuildLocal = function(...)
-  return _BuildObject(...)
-end
-GetOdf = function(...)
-  return (_GetOdf(...) or ""):gmatch("[^%c]*")()
-end
-GetPilotClass = function(...)
-  return (_GetPilotClass(...) or ""):gmatch("[^%c]*")()
-end
-GetWeaponClass = function(...)
-  return (_GetWeaponClass(...) or ""):gmatch("[^%c]*")()
-end
-table.pack = function(...)
-  local l = select("#", ...)
-  return setmetatable({
-    __n = l,
-    ...
-  }, {
-    __len = function()
-      return l
-    end
-  })
-end
-unpack = function(t, ...)
-  if (t.__n ~= nil) then
-    return _unpack(t, 1, t.__n)
-  end
-  return _unpack(t, ...)
-end
 
 local rHandles = {}
 
@@ -174,6 +123,72 @@ local replaceByData = function(data)
 end
 
 
+local function getBuildTree(odf)
+  -- looks at the odf file of the handle to get a list of odfs
+  local list = {default={}}
+  local isEmpty = true
+  --local odf = OpenODF(GetOdf(handle))
+  for i=1, 20 do
+    list.default[i] = GetODFString(odf, "ProducerClass", ("buildItem%d"):format(i))
+    isEmpty = isEmpty and list.default[i]==nil
+  end
+  if GetODFString(odf, "GameObjectClass", "classLabel") == "armory" then
+    local extraLists = {"cannon", "rocket", "mortar", "special"}
+    for _, l in ipairs(extraLists) do
+      list[l] = {}
+      for i=1, 20 do
+        list[l][i] = GetODFString(odf, "ArmoryClass", ("%sItem%d"):format(l,i))
+        isEmpty = isEmpty and list[l][i]==nil
+      end
+    end
+  end
+  return list, isEmpty
+end
+
+
+
+
+-- get build tree of all producers 
+local function getRecursiveBuildTree(odf)
+  local ret = {}
+  local bTree, empty = getBuildTree(odf)
+  if not empty then
+    for i, v in pairs(bTree.default) do
+      local sub, e = getRecursiveBuildTree(OpenODF(v))
+      ret[i] = {
+        odf = v,
+        list = not e and sub
+      }
+    end
+  end
+  return ret, empty
+end
+
+
+-- maps odf1 to odf2
+local function getUpgradeTable(t1, t2)
+  --local tree1 = getRecursiveBuildTree(odf1)
+  --local tree2 = getRecursiveBuildTree(odf2)
+  local buildTable = {}
+  for i, item in pairs(t1) do
+    if item.list then
+      local subTable = getUpgradeTable(item.list, t2[i].list)
+      for o1, o2 in pairs(subTable) do
+        buildTable[o1] = o2
+      end
+    end
+    buildTable[item.odf] = t2[i].odf
+  end
+  return buildTable
+end
+
+
+local function canBeUpgraded(handle)
+  return 
+    (not IsBusy(handle)) and 
+    (playerScavs[handle]==nil or playerScavs[handle].scrap <= 0 and playerScavs[handle].grace <= 0) and
+    (GetClassLabel(handle)~="apc" or GetCurrentCommand(handle) ~= AiCommand["GET_RELOAD"])
+end
 
 local function createNavMenu(team,...)
   local names = {...}
@@ -273,5 +288,9 @@ return {
   onReplace = onReplace,
   replaceByData = replaceByData,
   replaceHandles = replaceHandles,
-  receive = receive
+  receive = receive,
+  getBuildTree = getBuildTree,
+  getRecursiveBuildTree = getRecursiveBuildTree,
+  getUpgradeTable = getUpgradeTable,
+  canBeUpgraded = canBeUpgraded
 }
