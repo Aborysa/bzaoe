@@ -443,6 +443,6 @@ function Receive(from, t, ...)
     end
   elseif t == "U" then
     local era = ...
-    DisplayMessage(("%s entered the %s"):format(remotePlayers[from].name, era))
+    DisplayMessage(("%s entered the %s"):format((remotePlayers[from] or {name="Unknown"}).name, era))
   end
 end
