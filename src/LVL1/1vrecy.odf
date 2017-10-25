@@ -83,5 +83,5 @@ soundFinish = "avrecye9.wav"
 
 [AoE_Upgrade]
 nextRecy = "2vrecy"
-nextName = "Bronze age"
+nextName = "Tool age"
 upgradeRelic = "level1"
