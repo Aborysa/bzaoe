@@ -137,28 +137,7 @@ local function PerformUpgrade()
 end
 
 
-local function getCountOfOdf(odf)
-  local count = 0
-  if unitsByOdf[odf] then
-    for i, v in pairs(unitsByOdf[odf]) do
-      if IsValid(i) then
-        count = count + 1
-      end
-    end
-  end
-  return count
-end
 
-local function hasAnyOfOdf(odf)
-  if unitsByOdf[odf] then
-    for i, v in pairs(unitsByOdf[odf]) do
-      if IsValid(i) then
-        return true
-      end
-    end
-  end
-  return false
-end
 
 
 local function _checkAddHandle(handle)
@@ -200,6 +179,7 @@ function Start()
   end
   if playerCount <= 1 then
     localPlayer = lastPlayer or {id=0,team=GetTeamNum(GetPlayerHandle()),name="Player"}
+    ready = true
     onNetworkReady()  
   else
     DisplayMessage("Please wait for network systems...")
@@ -237,9 +217,9 @@ end
 function Update(dtime)
   -- wait for network to be ready
   if not ready then 
-    SetVelocity(GetPlayerHandle(), 0)
+    SetVelocity(GetPlayerHandle(), SetVector(0,0,0))
     SetOmega(GetPlayerHandle(), SetVector(0,0,0))
-    SetVelocity(GetRecyclerHandle(), 0)
+    SetVelocity(GetRecyclerHandle(), SetVector(0,0,0))
     SetOmega(GetRecyclerHandle(), SetVector(0,0,0))
     if readyTime > 0 then
       readyTime = readyTime - dtime
@@ -386,7 +366,7 @@ function GameKey(key)
   if localPlayer == nil then return end
   buildKey = key:match("Alt%+(%d)") or key:match("^(%d)") or key:match("Shift%+(%d)")
   
-  if key == "U" then
+  if (key == "U") and not IsNetGame() then
     PerformUpgrade()
     return
   end
@@ -404,7 +384,7 @@ function GameKey(key)
           break
         end
       end
-      local cb, item, req = checkIfCanBuild(v, kv, page)
+      local cb, item, req = checkIfCanBuild(v, kv, page, unitsByOdf)
       if not cb then
         print(("%s requires %s to be built"):format(item,req))
         if IsNetGame() then

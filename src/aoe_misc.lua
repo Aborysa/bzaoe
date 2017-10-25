@@ -274,6 +274,28 @@ navMenu = {
   end
 }
 
+local function getCountOfOdf(odf, t)
+  local count = 0
+  if t[odf] then
+    for i, v in pairs(t[odf]) do
+      if IsValid(i) then
+        count = count + 1
+      end
+    end
+  end
+  return count
+end
+
+local function hasAnyOfOdf(odf, t)
+  if t[odf] then
+    for i, v in pairs(t[odf]) do
+      if IsValid(i) then
+        return true
+      end
+    end
+  end
+  return false
+end
 
 
 local function getRequirements(odf)
@@ -288,7 +310,7 @@ local function getRequirements(odf)
   return req
 end
 
-local function checkIfCanBuild(handle, item, page)
+local function checkIfCanBuild(handle, item, page, unitTable)
   page = page or "default"
   local cls = GetClassLabel(handle)
   if cls == "constructionrig" then
@@ -305,7 +327,7 @@ local function checkIfCanBuild(handle, item, page)
       if GetScrap(team) >= sc then
         for i, v in pairs(getRequirements(o)) do
           local tmp = OpenODF(v)
-          if not hasAnyOfOdf(v) then
+          if not hasAnyOfOdf(v, unitTable) then
             local n1 = GetODFString(o, "GameObjectClass", "unitName")
             local n2 = GetODFString(tmp, "GameObjectClass", "unitName")
             return false, n1, n2 
