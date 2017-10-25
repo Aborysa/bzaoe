@@ -183,7 +183,7 @@ local function getUpgradeTable(t1, t2)
 end
 
 
-local function canBeUpgraded(handle)
+local function canBeUpgraded(handle, playerScavs)
   return 
     (not IsBusy(handle)) and 
     (playerScavs[handle]==nil or playerScavs[handle].scrap <= 0 and playerScavs[handle].grace <= 0) and

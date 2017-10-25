@@ -314,7 +314,7 @@ function Update(dtime)
   end
 
   for i, v in pairs(delayedUpgradeTable) do
-    if canBeUpgraded(i) then
+    if canBeUpgraded(i, playerScavs) then
       AddMaxScrap(localPlayer.team,1000)
       AddMaxPilot(localPlayer.team,1000)
 
