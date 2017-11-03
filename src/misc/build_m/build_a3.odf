@@ -1,0 +1,6 @@
+[Builder]
+buildName = "Bronze Age"
+buildTeam = 1
+buildItem1 = "build_3v"
+buildItem2 = "build_3s"
+buildItem3 = "build_3b"

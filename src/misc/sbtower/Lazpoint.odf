@@ -1,0 +1,21 @@
+[OrdnanceClass]
+classLabel = "beam"
+shotGeometry = NULL
+xplGround = 
+xplVehicle = 
+xplBuilding = 
+
+ammoCost = 0
+lifeSpan = 5.0
+shotSpeed = 200.0
+damageBallistic = 0
+damageConcussion = 0
+damageFlame = 0
+damageImpact = 0
+
+[BeamClass]
+segmentRadius = 0.1
+segmentLength = 3.0
+segmentVariance = 0.0
+segmentTexture = "beam_g.0"
+

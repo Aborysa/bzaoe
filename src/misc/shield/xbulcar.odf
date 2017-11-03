@@ -1,0 +1,14 @@
+[Explosion]
+classLabel = "explosion"
+
+frameName = "rshld.0"
+frameCount = 25
+frameDelay = 0.015
+explRadius = 0.2
+explSound = "wmgr1.wav"
+damageRadius = 0.0
+damageBallistic = 0
+damageConcussion = 0
+damageFlame = 0
+damageImpact = 0
+

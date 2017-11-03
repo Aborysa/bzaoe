@@ -1,0 +1,12 @@
+[Builder]
+buildName = "Vehicles"
+buildTeam = 1
+buildItem1 = "3vapc"
+buildItem2 = "3vartl"
+buildItem3 = "3vfigh"
+buildItem4 = "3vhraz"
+buildItem5 = "3vrckt"
+buildItem6 = "3vmine"
+buildItem7 = "3vltnk"
+buildItem8 = "3vtank"
+buildItem9 = "3vturr"

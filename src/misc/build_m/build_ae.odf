@@ -1,0 +1,8 @@
+[Builder]
+buildName = "Age of Empires"
+buildTeam = 1
+buildItem1 = "build_a1"
+buildItem2 = "build_a2"
+buildItem3 = "build_a3"
+buildItem4 = "build_ap"
+buildItem5 = "aoe_weap"

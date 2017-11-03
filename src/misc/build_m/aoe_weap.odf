@@ -1,0 +1,6 @@
+[Builder]
+buildName = "Weapons"
+buildTeam = 0
+buildItem1 = "aplstb"
+buildItem2 = "apphto"
+buildItem0 = "smine1"

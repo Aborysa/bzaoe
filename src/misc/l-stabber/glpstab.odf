@@ -1,0 +1,13 @@
+[WeaponClass]
+baseName = "gatstab"
+classLabel = "cannon"
+ordName = "rocketL"
+wpnName = "L-Stabber"
+fireSound = "gmagg06.wav"
+wpnReticle = "gspstab"
+wpnPriority = 5
+wpnCategory = "CANN"
+
+[CannonClass]
+shotDelay = 0.6
+

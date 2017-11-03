@@ -1,0 +1,8 @@
+[WeaponClass]
+classLabel = "beamgun"
+ordName = "lazpoint"
+wpnName = "Laser Pointer"
+fireSound = "gflas00.wav"
+wpnReticle = "gflashgn"
+wpnPriority = 6
+wpnCategory = "CANN"

@@ -1,0 +1,12 @@
+[Builder]
+buildName = "Supplies"
+buildTeam = 2
+buildItem1 = "3vscav"
+buildItem2 = "3vrecy"
+buildItem3 = "3vmuf"
+buildItem4 = "3vslf"
+buildItem5 = "3vcnst"
+buildItem6 = "3vcnst2"
+buildItem7 = "3bspow"
+buildItem8 = "3bwpow"
+buildItem9 = "3blpow"

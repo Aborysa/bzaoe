@@ -1,0 +1,6 @@
+[Builder]
+buildName = "Buildings"
+buildTeam = 1
+buildItem1 = "2bbarr"
+buildItem2 = "2bsilo"
+buildItem3 = "2bsupp"

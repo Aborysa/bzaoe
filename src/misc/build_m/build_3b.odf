@@ -1,0 +1,11 @@
+[Builder]
+buildName = "Buildings"
+buildTeam = 2
+buildItem1 = "3bbarr"
+buildItem2 = "3bhang"
+buildItem3 = "3bsupp"
+buildItem4 = "3btowe"
+buildItem5 = "3bhtowe"
+buildItem6 = "3bmbld"
+buildItem7 = "3bcafe"
+buildItem8 = "3blpad"

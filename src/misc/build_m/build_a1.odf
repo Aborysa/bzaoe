@@ -1,0 +1,12 @@
+[Builder]
+buildName = "Stone Age"
+buildTeam = 1
+buildItem1 = "1vscav"
+buildItem2 = "1vtank"
+buildItem3 = "1vltnk"
+buildItem4 = "1vfigh"
+buildItem5 = "1vrecy"
+buildItem6 = "1vmuf"
+buildItem7 = "1vcnst"
+buildItem8 = "1vcnst2"
+buildItem9 = "1bbarr"

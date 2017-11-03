@@ -1,0 +1,14 @@
+[Explosion]
+classLabel = "explosion"
+
+frameName = "bshld.0"
+frameCount = 25
+frameDelay = 0.02
+explRadius = 1.0
+explSound = "xsv2.wav"
+damageRadius = 5.0
+damageBallistic = 0
+damageConcussion = 50
+damageFlame = 0
+damageImpact = 0
+

@@ -1,0 +1,51 @@
+[GameObjectClass]
+baseName = "sbhtowe"
+classLabel = "turret"
+componentName1 = "HeavyTurret"
+scrapCost = 10
+scrapValue = 4
+maxHealth = 5000
+maxAmmo = 50000
+collisionRadius = 5.0
+unitName = "Heavy Tower"
+aiName = "GunTowerFriend"
+aiName2 = "GunTowerEnemy"
+heatSignature = 0.8
+imageSignature = 8.0
+radarSignature = 1.0
+
+weaponHard1 = "GC1"
+weaponName1 = "gtminis"
+weaponHard2 = "GC2"
+weaponName2 = "gtminis"
+weaponHard3 = "GC3"
+weaponName3 = "gtminis"
+weaponHard4 = "GC4"
+weaponName4 = "gtminis"
+weaponHard5 = "GC5"
+weaponName5= "glazpnt"
+weaponMask = 11111
+
+[CraftClass]
+rangeScan = 200.0
+periodScan = 0.0
+velocJam = 0.0
+
+[TurretCraftClass]
+setAltitude = 0.0
+omegaTurret = 3.0
+alphaTurret = 5.0
+alphaTrack = 10.0
+alphaDamp = 3.0
+pitchPitch = 0.5
+
+[BuildingClass]
+SoundAmbient = "abtowee0.wav"
+
+[AoE_Turret]
+altWep = "gphoto"
+
+[AoE_TechTree]
+requires1="3bhqcp"
+requires2="3bsilo"
+
