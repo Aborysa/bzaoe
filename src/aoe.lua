@@ -1,10 +1,20 @@
 
 -- helper functions nothing important
-print("AoE!")
+print("AoE! gaahh")
 -- should move all these function to another file
 
 local misc = require("aoe_misc")
+local bzutils = require("bzutils")
+local rx = require("rx")
+local HeavyTurret = require("hvturr")
+local componentManager = bzutils.component.componentManager
 
+
+local net = bzutils.net.net
+local BroadcastSocket = bzutils.net.BroadcastSocket
+local core = bzutils.core
+
+componentManager:useClass(HeavyTurret)
 
 
 local copyData = misc.copyData
@@ -38,9 +48,8 @@ local checkLater = {}
 local removeOnNext = {}
 local upgradeOnNext = {}
 local ready = false
-local readyTime = -1
 local currentNavMenu = nil
-
+local socket = nil
 
 -- We have to keep track of how much scrap the scavs have
 -- in order to be able to guess when they're empty
@@ -127,10 +136,11 @@ local function PerformUpgrade()
     SetMaxScrap(localPlayer.team,GetMaxScrap(localPlayer.team) - 1000)
     SetMaxPilot(localPlayer.team,GetMaxPilot(localPlayer.team) - 1000)
     print(("%s entered the %s"):format(localPlayer.name, upName))
-    if IsNetGame() then
-      DisplayMessage(("%s entered the %s"):format(localPlayer.name, upName))
+    if socket then
+      socket:send("DISP", ("%s entered the %s"):format(localPlayer.name, upName))
+      --DisplayMessage(("%s entered the %s"):format(localPlayer.name, upName))
       -- tell other players that I upgraded from X to Y
-      Send(0, "U", upName)
+      --Send(0, "U", upName)
     end
   end
 
@@ -171,27 +181,37 @@ local function _checkAddHandle(handle)
 end
 
 
-function Start()
-  print("Start")
-  -- only host is in game ;-;
-  for v in AllObjects() do
-    AddObject(v)
-  end
-  if playerCount <= 1 then
-    localPlayer = lastPlayer or {id=0,team=GetTeamNum(GetPlayerHandle()),name="Player"}
-    ready = true
-    onNetworkReady()  
+local function setUpSockets()
+  ready = false
+  local socksub = nil 
+  if IsHosting() then
+    socksub = rx.Observable.of(net:openSocket(0, BroadcastSocket, "aoe.sock"))
   else
-    DisplayMessage("Please wait for network systems...")
+    socksub = net:getRemoteSocket("aoe.sock")
   end
+  socksub:subscribe(function(sock)
+    print("Socket connected")
+    DisplayMessage("Socket is set up!")
+    socket = sock
+    socket:onReceive():subscribe(function(what, ...)
+      if what == "DISP" then
+        DisplayMessage(...)
+      end
+    end)
+    ready = true
+  end)
 end
 
 -- Is called when we have our own local id
-function onNetworkReady()
+local function onNetworkReady()
+  localPlayer = net:getLocalPlayer()
   print("Network ready", localPlayer.name, localPlayer.id)
   if IsNetGame() then
     DisplayMessage("Network is set up!")
     DisplayMessage(("You're %s %d"):format(localPlayer.name, localPlayer.id))
+    setUpSockets()
+  else
+    ready = true
   end
   AddMaxScrap(localPlayer.team,1000)
   AddMaxPilot(localPlayer.team,1000)
@@ -205,6 +225,31 @@ function onNetworkReady()
   SetMaxPilot(localPlayer.team,GetMaxPilot(localPlayer.team) - 1000)
 end
 
+
+function Start()
+  print("Start")
+  core:start()
+  
+  -- only host is in game ;-;
+  for v in AllObjects() do
+    AddObject(v)
+  end
+  net:onNetworkReady():subscribe(onNetworkReady)
+  net:onHostMigration():subscribe(function()
+    DisplayMessage("Host migrated, re-creating sockets...")
+    setUpSockets()
+  end)
+  --if playerCount <= 1 then
+  --  localPlayer = lastPlayer or {id=0,team=GetTeamNum(GetPlayerHandle()),name="Player"}
+  --  ready = true
+  --  onNetworkReady()  
+  --else
+  --  DisplayMessage("Please wait for network systems...")
+  --end
+end
+
+
+
 local i=false
 local init = function()
   --PerformUpgrade()
@@ -216,21 +261,16 @@ end
 
 function Update(dtime)
   -- wait for network to be ready
+  core:update(dtime)
   if not ready then 
     SetVelocity(GetPlayerHandle(), SetVector(0,0,0))
     SetOmega(GetPlayerHandle(), SetVector(0,0,0))
     SetVelocity(GetRecyclerHandle(), SetVector(0,0,0))
     SetOmega(GetRecyclerHandle(), SetVector(0,0,0))
-    if readyTime > 0 then
-      readyTime = readyTime - dtime
-      if readyTime <= 0 then
-        ready = true
-        onNetworkReady()
-      end
-    end
     return
   end
   if currentNavMenu ~= nil then currentNavMenu:update() end
+  
   
   -- track scavenger scrap hold, will need one for APCs aswell
   for scav, d in pairs(playerScavs) do
@@ -338,6 +378,7 @@ end
 -- all objects passed to this function should be local to the player
 function AddObject(handle)
   -- double check if it is remote and if it is on the players team
+  core:addObject(handle)
   if localPlayer ~= nil then
     _checkAddHandle(handle)
   else
@@ -346,10 +387,12 @@ function AddObject(handle)
 end
 
 function CreateObject(handle)
+  core:createObject(handle)
 end
 
 
 function DeleteObject(handle)
+  core:deleteObject(handle)
   local odf = units[handle] and units[handle].odf
   units[handle] = nil
   playerScavs[handle] = nil
@@ -363,6 +406,7 @@ end
 
 
 function GameKey(key)
+  core:gameKey(key)
   if localPlayer == nil then return end
   buildKey = key:match("Alt%+(%d)") or key:match("^(%d)") or key:match("Shift%+(%d)")
   
@@ -397,24 +441,17 @@ function GameKey(key)
 end
 
 -- networking stuff
-function CreatePlayer(id, name, team)
-  print("CreatePlayer", id, name, team)
-  lastPlayer = {id = id, name = name, team = team}
-  playerCount = playerCount + 1
+function CreatePlayer(...)
+  core:createPlayer(...)
 end
 
-function AddPlayer(id, name, team)
-  remotePlayers[id] = {id=id,name=name,team=team}
-  waitForPlayers[id] = true
-  print("AddPlayer", id, name, team)
-  Send(id, "P", id, name, team)
+function AddPlayer(...)
+  core:addPlayer(...)
 end
 
 
-function DeletePlayer(id, name, team)
-  remotePlayers[id] = nil
-  waitForPlayers[id] = nil
-  playerCount = playerCount - 1
+function DeletePlayer(...)
+  core:deletePlayer(...)
 end
 
 
@@ -422,27 +459,6 @@ end
 
 function Receive(from, t, ...)
   print("Receive", from, t, ...)
+  core:receive(from, t, ...)
   misc.receive(from, t, ...)
-  if t == "P" then
-    waitForPlayers[from] = nil
-    if localPlayer == nil then
-      id, name, team = ...
-      readyTime = 15
-      localPlayer = {id=id,name=name,team=team}
-    end
-    if not ready then
-      local left = 0
-      for i, v in pairs(waitForPlayers) do
-        left = left + 1
-      end
-      DisplayMessage(("Connected to %d/%d"):format(playerCount-left-1, playerCount - 1))
-      if left <= 0 then
-        ready = true
-        onNetworkReady()
-      end
-    end
-  elseif t == "U" then
-    local era = ...
-    DisplayMessage(("%s entered the %s"):format((remotePlayers[from] or {name="Unknown"}).name, era))
-  end
 end

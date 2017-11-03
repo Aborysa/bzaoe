@@ -2,7 +2,6 @@ local rx = require("rx")
 local bzutils = require("bzutils")
 
 
-local _OpenODF = OpenODF
 local _RemoveObject = RemoveObject
 
 
@@ -81,17 +80,21 @@ local copyData = function(handle, odf, team, location, keepWeapons, kill, fracti
     weapons = weapons,
     owner = GetOwner(handle),
     velocity = GetVelocity(handle),
-    odf = odf
+    odf = odf,
+    who = GetCurrentWho(handle),
+    command = GetCurrentCommand(handle)
   }
 end
 
 local spawnByData = function(data)
   local nObject = BuildObject(data.odf, data.team, data.location)
   SetTransform(nObject, data.location)
-  if (data.aliveAndPilot and data.building) then
-    SetPilotClass(nObject, data.pilot or "")
-  elseif ((not data.alive) and data.kill) then
-    RemovePilot(nObject)
+  if (not data.building) then
+    if (data.aliveAndPilot) then
+      SetPilotClass(nObject, data.pilot or "")
+    elseif ((not data.alive) and data.kill) then
+      RemovePilot(nObject)
+    end
   end
   SetCurHealth(nObject, data.fraction and data.health*GetMaxHealth(nObject) or data.health)
   SetCurAmmo(nObject, data.fraction and data.ammo*GetMaxAmmo(nObject) or data.ammo)
