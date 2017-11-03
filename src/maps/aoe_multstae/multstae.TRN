@@ -1,8 +1,8 @@
 [Size]
 MinX=0
-MinZ=99840
-Width=2560
-Depth=2560
+MinZ=0
+Width=5120
+Depth=5120
 Height=0
 
 [NormalView]
