@@ -47,5 +47,7 @@ altWep = "gphoto"
 
 [AoE_TechTree]
 requires1="3bhqcp"
-requires2="3bsilo"
+requires2="3btowe"
+requires3="3blpow"
+requires4="3bsilo"
 

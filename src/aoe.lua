@@ -227,7 +227,7 @@ end
 
 
 function Start()
-  print("Start")
+  print("Start", GetTime())
   core:start()
   
   -- only host is in game ;-;

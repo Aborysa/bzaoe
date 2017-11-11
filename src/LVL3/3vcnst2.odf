@@ -68,7 +68,7 @@ buildItem3 = "3blpow"
 buildItem4 = "3bbarr"
 buildItem5 = "3btowe"
 buildItem6 = "3bhqcp"
-buildItem7 = 
+buildItem7 = "3bhtowe"
 
 [AoE_Builder]
 constOdf1="3vcnst"

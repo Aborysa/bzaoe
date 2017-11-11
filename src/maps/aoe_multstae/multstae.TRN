@@ -6,7 +6,7 @@ Depth=5120
 Height=0
 
 [NormalView]
-Time=0800
+Time=0500
 FogStart=60
 FogEnd=130
 FogBreak=30
@@ -73,10 +73,6 @@ CapTo2_A0      = ve02cA0.map
 CapTo2_A1      = ve02cA1.map
 CapTo2_A2      = ve02cA2.map
 CapTo2_A3      = ve02cA3.map
-CapTo2_B0      = ve02cB0.map
-CapTo2_B1      = ve02cB1.map
-CapTo2_B2      = ve02cB2.map
-CapTo2_B3      = ve02cB3.map
 
 DiagonalTo2_A0 = ve02dA0.map
 DiagonalTo2_A1 = ve02dA1.map
@@ -110,6 +106,10 @@ SolidB0        = ve22sB0.map
 SolidB1        = ve22sB1.map
 SolidB2        = ve22sB2.map
 SolidB3        = ve22sB3.map
+SolidC0      = ve02cB0.map
+SolidC0     = ve02cB1.map
+SolidC0     = ve02cB2.map
+SolidC0     = ve02cB3.map
 
 [TextureType3] Hardened Sulphur
 FlatColor= 203
