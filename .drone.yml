@@ -42,4 +42,4 @@ pipeline:
       - \cp -f /bzaoe/output/bundle.zip /drone/deploy/bzaoe_${DRONE_TAG}.zip || true
       - \cp -f /bzaoe/output/bundle1.5.zip /drone/deploy/bzaoe1.5c_${DRONE_TAG}.zip || true
     volumes:
-      - /root/studynator/nginx-fs/public/bzaoe:/drone/deploy
+      - /mnt/nginx-fs/files/public/bzaoe:/drone/deploy
